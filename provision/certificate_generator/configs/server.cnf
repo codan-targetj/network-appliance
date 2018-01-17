@@ -1,0 +1,37 @@
+ROOT=/vagrant/certstore
+CA_DIR	= $ROOT/CA
+KEY_DIR = $CA_DIR/keys
+
+[ req ]
+default_bits 		= 4096
+default_keyfile		= $KEY_DIR/server_key.pem
+distinguished_name	= server_distinguished_name
+req_extensions		= server_req_extensions
+string_mask		= utf8only
+
+[ server_distinguished_name ]
+countryName		= Country Name
+stateOrProvinceName	= State or Province Name
+localityName		= Locality Name (eg, City)
+organizationName	= Organization Name (eg, Company)
+commonName		= Common Name
+emailAddress		= Email Address
+
+countryName_default		= AU
+stateOrProvinceName_default 	= South Australia
+localityName_default		= Adelaide
+organizationName_default	= Minetec
+commonName_default		= WiFiWASP-Server
+
+[ server_req_extensions ]
+subjectKeyIdentifier	= hash
+basicConstraints	= CA:FALSE
+keyUsage		= digitalSignature, keyEncipherment
+subjectAltName		= @alternate_names
+nsComment		= "OpenSSL Generated Minetec Certificate"
+
+[ alternate_names ]
+IP.1	= 10.96.1.1
+IP.2	= 127.0.0.1
+IP.3	= ::1
+DNS.1	= minetec.com.au

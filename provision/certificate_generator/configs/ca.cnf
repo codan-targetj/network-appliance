@@ -1,0 +1,67 @@
+ROOT=/vagrant/certstore
+CA_DIR			= $ROOT/CA
+CA_KEYS_DIR		= $CA_DIR/keys
+CA_ISSUE_DIR		= $CA_DIR/issue
+NEW_CERTS_DIR		= $ROOT/new_certs
+
+[ ca ]
+default_ca		= CA_default
+
+[ CA_default ]
+default_days		= 1825
+default_crl_days	= 30
+default_md		= sha256
+preserve		= no
+x509_extensions		= ca_extensions
+email_in_dn		= no
+copy_extensions		= copy
+certificate		= $CA_DIR/ca_cert.pem
+private_key		= $CA_KEYS_DIR/ca_key.pem
+new_certs_dir		= $NEW_CERTS_DIR
+database		= $CA_ISSUE_DIR/index.txt
+serial			= $CA_ISSUE_DIR/serial.txt
+unique_subject		= no
+
+[ req ]
+default_bits		= 4096
+default_md		= sha256
+default_keyfile		= $CA_KEYS_DIR/ca_key.pem
+string_mask		= utf8only
+distinguished_name	= ca_distinguished_name
+
+[ ca_distinguished_name ]
+countryName		= Country Name
+stateOrProvinceName	= State Or Province Name
+localityName		= Locality Name (eg, City)
+organizationName	= Organization Name (eg, Company)
+organizationalUnitName	= Organizational Unit Name (eg, Division)
+commonName		= Common Name
+emailAddress		= Email Address
+
+countryName_default		= AU
+stateOrProvinceName_default	= South Australia
+localityName_default		= Adelaide
+organizationName_default	= Minetec
+organizationalUnitName_default	= WiFiWASP
+commonName_default		= WiFiWASP-CA
+
+[ ca_extensions ]
+basicConstraints	= critical,CA:TRUE
+subjectKeyIdentifier	= hash
+authorityKeyIdentifier	= keyid:always,issuer
+keyUsage		= keyCertSign, cRLSign
+
+[ signing_policy ]
+countryName		= optional
+stateOrProvinceName	= optional
+localityName		= optional
+organizationName	= optional
+organizationalUnitName	= optional
+commonName		= supplied
+emailAddress		= optional
+
+[ signing_req ]
+subjectKeyIdentifier	= hash
+authorityKeyIdentifier	= keyid,issuer
+basicConstraints	= CA:FALSE
+keyUsage		= digitalSignature, keyEncipherment

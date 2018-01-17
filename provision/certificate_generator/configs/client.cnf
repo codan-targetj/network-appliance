@@ -1,0 +1,29 @@
+ROOT=/vagrant/certstore
+NEW_CERTS_DIR 	= $ROOT/new_certs
+
+[ req ]
+default_bits 		= 4096
+default_keyfile		= default.key
+distinguished_name	= client_distinguished_name
+req_extensions		= client_req_extensions
+string_mask		= utf8only
+
+[ client_distinguished_name ]
+countryName		= Country Name
+stateOrProvinceName	= State or Province Name
+localityName		= Locality Name (eg, City)
+organizationName	= Organization Name (eg, Company)
+commonName		= Common Name
+emailAddress		= Email Address
+
+countryName_default		= AU
+stateOrProvinceName_default 	= South Australia
+localityName_default		= Adelaide
+organizationName_default	= Minetec
+commonName_default		= WiFiWASP-Client
+
+[ client_req_extensions ]
+subjectKeyIdentifier	= hash
+basicConstraints	= CA:FALSE
+keyUsage		= nonRepudiation, digitalSignature, keyEncipherment, dataEncipherment, keyAgreement
+nsComment		= "OpenSSL Generated Minetec Certificate for Nodes"
