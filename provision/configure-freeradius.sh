@@ -8,7 +8,7 @@ DIR=/etc/freeradius
 dh_bits=128
 
 echo "Generate a Diffie-Hellman cipher file. This may take a long time..."
-openssl dhparam -check -text -5 $dh_bits -out $DIR/certs/dh
+openssl dhparam -check -text -5 $dh_bits -out $DIR/certs/dh >/dev/null 2>&1
 
 echo "Setting config in radiusd.conf"
 sed -i '/max_requests = /c\max_requests = 7680' $DIR/radiusd.conf
@@ -55,7 +55,7 @@ server wifiwasp_network {
 
 echo "Replacing eap.conf"
 mv $DIR/eap.conf $DIR/eap_original.conf
-cp /vagrannt/provision/eap.conf $DIR/eap.conf
+cp /vagrant/provision/eap.conf $DIR/eap.conf
 
 echo "Setting subnet range and configuration parameters for the network using EAP authentication"
 echo "

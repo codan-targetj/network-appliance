@@ -1,25 +1,30 @@
 #!/bin/bash
 
-read -p "Executing this script will restore /certstore to default settings. Continue [N/y]?" CONTINUE
+if [ X"$1" = X"-y" ]
+then
+    echo Auto yes answer given. Not waiting for user-confirmation.
+else
+    read -p "Executing this script will restore /certstore to default settings. Continue [N/y]?" CONTINUE
 
-CONTINUE=${CONTINUE:-"n"}
-CONTINUE=$(echo "$CONTINUE" | awk '{print tolower($CONTINUE)}')
+    CONTINUE=${CONTINUE:-"n"}
+    CONTINUE=$(echo "$CONTINUE" | awk '{print tolower($CONTINUE)}')
 
-case $CONTINUE in 
-	"y")
-		echo "Running restore..."
-	;;
-	"n")
-		echo "Restore cancelled."
-		exit 1
-	;;
-	*)
-		echo "Invalid argument ($CONITNUE)."
-		exit 0
-	;;
-esac
+    case $CONTINUE in 
+        "y")
+            echo "Running restore..."
+        ;;
+        "n")
+            echo "Restore cancelled."
+            exit 1
+        ;;
+        *)
+            echo "Invalid argument ($CONITNUE)."
+            exit 0
+        ;;
+    esac
+fi
 
-CERTSTORE_DIR=`pwd`
+CERTSTORE_DIR=/vagrant/provision/certificate_generator
 
 echo "Removing directories..."
 

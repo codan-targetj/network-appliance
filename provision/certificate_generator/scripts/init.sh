@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ROOT=`pwd`
+ROOT=/vagrant/provision/certificate_generator
 CONFIG_DIR=$ROOT/configs
 CA_DIR=$ROOT/CA
 CA_KEYS_DIR=$CA_DIR/keys
@@ -14,6 +14,7 @@ TEMP_DIR=/tmp/certstore
 PASS_DIR=$CA_DIR
 
 NO_PASS=true #force true until make_clients.sh update to account for password protected key files
+BATCH=
 
 USER=`/usr/bin/id -run`
 
@@ -28,6 +29,9 @@ do
 		"-nopass")
 			NO_PASS=true
 		;;
+        "-batch")
+            BATCH=-batch
+        ;;
 	esac
 	shift
 done
@@ -80,9 +84,9 @@ gen_random_passphrase $PASS_DIR/ca.pp 64
 # Create a self-signed certificate to act as Certificate Authority
 echo "Creating self-signed Certificate Authority..."
 if [ $NO_PASS = false ] ; then
-	openssl req -new -x509 -config $CONFIG_DIR/ca.cnf -out $CA_DIR/ca_cert.pem -passout file:$PASS_DIR/ca.pp -batch
+	openssl req -new -x509 -config $CONFIG_DIR/ca.cnf -out $CA_DIR/ca_cert.pem -passout file:$PASS_DIR/ca.pp $BATCH >/dev/null 2>&1
 else
-	openssl req -new -x509 -config $CONFIG_DIR/ca.cnf -out $CA_DIR/ca_cert.pem -nodes -batch
+	openssl req -new -x509 -config $CONFIG_DIR/ca.cnf -out $CA_DIR/ca_cert.pem -nodes $BATCH >/dev/null 2>&1
 fi 
 
 # Generate Random Passphrase for Server CSR
@@ -91,18 +95,18 @@ gen_random_passphrase $PASS_DIR/server.pp 64
 # Create a CSR for the server
 echo "Creating Certificate Sign Request (CSR) for the server..."
 if [ $NO_PASS = false ] ; then
-	openssl req -new -config $CONFIG_DIR/server.cnf -out $CA_DIR/server_req.csr -passout file:$PASS_DIR/server.pp -batch
+	openssl req -new -config $CONFIG_DIR/server.cnf -out $CA_DIR/server_req.csr -passout file:$PASS_DIR/server.pp $BATCH >/dev/null 2>&1
 else
-	openssl req -new -config $CONFIG_DIR/server.cnf -out $CA_DIR/server_req.csr -nodes -batch
+	openssl req -new -config $CONFIG_DIR/server.cnf -out $CA_DIR/server_req.csr -nodes $BATCH >/dev/null 2>&1
 fi
 
 # Sign the Server CSR with CA, using ca.cnf
 SERIAL_NUMBER=`cat $CA_ISSUE_DIR/serial.txt`
 echo "Signing the server CSR..."
 if [ $NO_PASS = false ] ; then 
-	openssl ca -config $CONFIG_DIR/ca.cnf -passin file:$PASS_DIR/ca.pp -policy signing_policy -extensions signing_req -out $NEW_CERTS_DIR/server_cert.pem -in $CA_DIR/server_req.csr
+	openssl ca $BATCH -config $CONFIG_DIR/ca.cnf -passin file:$PASS_DIR/ca.pp -policy signing_policy -extensions signing_req -out $NEW_CERTS_DIR/server_cert.pem -in $CA_DIR/server_req.csr >/dev/null 2>&1
 else
-	openssl ca -config $CONFIG_DIR/ca.cnf -policy signing_policy -extensions signing_req -out $NEW_CERTS_DIR/server_cert.pem -in $CA_DIR/server_req.csr
+	openssl ca $BATCH -config $CONFIG_DIR/ca.cnf -policy signing_policy -extensions signing_req -out $NEW_CERTS_DIR/server_cert.pem -in $CA_DIR/server_req.csr >/dev/null 2>&1
 fi
 
 mv $NEW_CERTS_DIR/server_cert.pem $CERTS_DIR/server_cert.pem
